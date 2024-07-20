@@ -27,7 +27,7 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
  * @author Heiko Scherrer
  */
 @AnalyzeClasses(packages = "org.openwms")
-public class GlobalRulesTest {
+public class GlobalRules {
 
     @ArchTest
     public static final ArchRule slicesFreeOfCycles = slices().matching("org.openwms.(*)..").should().beFreeOfCycles();
