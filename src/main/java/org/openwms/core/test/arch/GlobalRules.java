@@ -19,6 +19,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
 /**
@@ -26,10 +27,17 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
  *
  * @author Heiko Scherrer
  */
-@AnalyzeClasses(packages = "org.openwms")
+@AnalyzeClasses
 public class GlobalRules {
 
     @ArchTest
     public static final ArchRule slicesFreeOfCycles = slices().matching("org.openwms.(*)..").should().beFreeOfCycles();
 
+    @ArchTest
+    public static final ArchRule apiImplDependenciesNotAllowed = noClasses()
+            .that()
+            .resideInAPackage("..api..")
+            .should()
+            .dependOnClassesThat()
+            .resideInAPackage("..impl..");
 }
