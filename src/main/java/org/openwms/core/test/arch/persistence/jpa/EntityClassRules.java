@@ -33,7 +33,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
  *
  * @author Heiko Scherrer
  */
-@AnalyzeClasses(packages = "org.openwms")
+@AnalyzeClasses
 public class EntityClassRules {
 
     @ArchTest
