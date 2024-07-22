@@ -15,22 +15,18 @@
  */
 package org.openwms.core.test.arch;
 
-import com.tngtech.archunit.base.DescribedPredicate;
-import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.CacheMode;
 import com.tngtech.archunit.lang.ArchRule;
-import org.springframework.validation.annotation.Validated;
-
-import java.util.Collection;
+import org.ameba.annotation.Public;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static org.openwms.core.test.arch.SpringPredicates.areSpringBeans;
+import static org.openwms.core.test.arch.SpringPredicates.areSpringBeansButNoControllers;
 
 /**
- * A ValidationRules.
+ * A SpringRules.
  *
  * @author Heiko Scherrer
  */
@@ -38,18 +34,14 @@ import static org.openwms.core.test.arch.SpringPredicates.areSpringBeans;
         ImportOption.DoNotIncludeTests.class,
         ImportOption.DoNotIncludeJars.class
 })
-public final class ValidationRules {
+public final class SpringRules {
 
-    private ValidationRules() {}
+    private SpringRules() {}
 
     @ArchTest
-    public static final ArchRule useValidatedWhenRequired = classes()
-            .that(areSpringBeans)
-            .and().containAnyMethodsThat(new DescribedPredicate<>("have a JSR303 annotation") {
-                @Override
-                public boolean test(JavaMethod javaField) {
-                    return javaField.getParameterAnnotations().stream().flatMap(Collection::stream).anyMatch(a -> "jakarta.validation".equals(a.getRawType().getPackageName()));
-                }
-            })
-            .should().beAnnotatedWith(Validated.class);
+    public static final ArchRule springBeanImplementationsMustBeRestrictedInVisibility = classes()
+            .that(areSpringBeansButNoControllers)
+            .and().areNotAnnotatedWith(Public.class)
+            .should().bePackagePrivate()
+            .orShould().beProtected();
 }

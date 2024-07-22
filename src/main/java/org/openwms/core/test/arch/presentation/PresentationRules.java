@@ -15,8 +15,10 @@
  */
 package org.openwms.core.test.arch.presentation;
 
+import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.junit.CacheMode;
 import com.tngtech.archunit.lang.ArchRule;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
@@ -26,8 +28,13 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
  *
  * @author Heiko Scherrer
  */
-@AnalyzeClasses
-public class PresentationRules {
+@AnalyzeClasses(packages = "org.openwms", cacheMode = CacheMode.PER_CLASS, importOptions = {
+        ImportOption.DoNotIncludeTests.class,
+        ImportOption.DoNotIncludeJars.class
+})
+public final class PresentationRules {
+
+    private PresentationRules() {}
 
     @ArchTest
     public static final ArchRule notUseDTONaming = noClasses()

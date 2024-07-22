@@ -15,10 +15,14 @@
  */
 package org.openwms.core.test.arch;
 
+import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.junit.CacheMode;
 import com.tngtech.archunit.lang.ArchRule;
+import org.slf4j.Logger;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
@@ -27,8 +31,13 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
  *
  * @author Heiko Scherrer
  */
-@AnalyzeClasses
-public class GlobalRules {
+@AnalyzeClasses(packages = "org.openwms", cacheMode = CacheMode.PER_CLASS, importOptions = {
+        ImportOption.DoNotIncludeTests.class,
+        ImportOption.DoNotIncludeJars.class
+})
+public final class GlobalRules {
+
+    private GlobalRules() {}
 
     @ArchTest
     public static final ArchRule slicesFreeOfCycles = slices().matching("org.openwms.(*)..").should().beFreeOfCycles();
@@ -39,5 +48,15 @@ public class GlobalRules {
             .resideInAPackage("..api..")
             .should()
             .dependOnClassesThat()
-            .resideInAPackage("..impl..");
+            .resideInAPackage("..impl..")
+            .because("The API package is exposed to the client and should never expose internals");
+
+    @ArchTest
+    public static final ArchRule verify_logger_definition =
+            fields().that().haveRawType(Logger.class)
+                    .should().bePrivate()
+                    .andShould().beStatic()
+                    .andShould().beFinal()
+                    .because("This a defined logger definition");
+
 }
