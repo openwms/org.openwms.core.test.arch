@@ -21,6 +21,16 @@
     </issueManagement>
 
     <distributionManagement>
+        <repository>
+            <id>interface21-releases</id>
+            <name>OpenWMS.org Release Repository</name>
+            <url>https://repo.openwms.cloud/repository/maven-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>interface21-snapshots</id>
+            <name>OpenWMS.org Snapshot Repository</name>
+            <url>https://repo.openwms.cloud/repository/maven-snapshots</url>
+        </snapshotRepository>
         <site>
             <id>site</id>
             <url>scm:git:git@github.com:openwms/org.openwms.core.test.arch.git</url>
