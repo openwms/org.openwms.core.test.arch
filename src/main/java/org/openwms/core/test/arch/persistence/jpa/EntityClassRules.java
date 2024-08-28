@@ -72,4 +72,12 @@ public final class EntityClassRules {
             .areAnnotatedWith(MappedSuperclass.class).or()
             .areAnnotatedWith(Enumerated.class)
             .should().dependOnClassesThat().resideInAnyPackage("..lombok..");
+
+    @ArchTest
+    static final ArchRule entitiesMustNotBeSerialized = noClasses().that()
+            .areAnnotatedWith(Entity.class)
+            .or()
+            .areAnnotatedWith(MappedSuperclass.class)
+            .should()
+            .dependOnClassesThat().resideInAnyPackage("com.fasterxml.jackson..");
 }
