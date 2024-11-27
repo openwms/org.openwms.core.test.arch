@@ -1,4 +1,5 @@
 # Purpose
+This library defines custom ArchUnit rules to ensure the architecture and design that is applied to OpenWMS components.
 
 # Links
 - https://www.archunit.org/userguide/html/000_Index.html

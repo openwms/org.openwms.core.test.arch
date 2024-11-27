@@ -31,7 +31,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 /**
- * A EntityClassRules.
+ * A EntityClassRules defines rules for JPA types.
  *
  * @author Heiko Scherrer
  */
@@ -43,12 +43,26 @@ public final class EntityClassRules {
 
     private EntityClassRules() {}
 
+    /**
+     * ArchUnit rule that ensures all classes annotated with @Entity are
+     * also annotated with @Table.
+     *
+     * This rule is applied to enforce that every JPA entity has a corresponding
+     * database table mapping.
+     */
     @ArchTest
     public static final ArchRule entitiesMustHaveTableAnnotation = classes()
             .that()
             .areAnnotatedWith(Entity.class)
             .should().beAnnotatedWith(Table.class);
 
+    /**
+     * ArchUnit rule that ensures no classes annotated with @Entity or
+     * @MappedSuperclass reside in packages "..entities.." or "..entity..".
+     *
+     * This rule is applied to enforce a clean package structure by preventing JPA
+     * entity classes from being placed in certain packages.
+     */
     @ArchTest
     public static final ArchRule noEntityPackages = noClasses()
             .that()
@@ -56,6 +70,14 @@ public final class EntityClassRules {
             .areAnnotatedWith(MappedSuperclass.class)
             .should().resideInAnyPackage("..entities..", "..entity..");
 
+    /**
+     * ArchUnit rule that ensures all classes annotated with @Entity or
+     * @MappedSuperclass, except those with the simple name "AuditableRevisionEntity",
+     * should extend either ApplicationEntity or BaseEntity.
+     *
+     * This rule enforces a standard inheritance hierarchy for entities, ensuring
+     * that they inherit common behavior and properties from base classes.
+     */
     @ArchTest
     public static final ArchRule entitiesMustExtendBaseClasses = classes()
             .that()
@@ -65,6 +87,14 @@ public final class EntityClassRules {
             .should().beAssignableTo(ApplicationEntity.class)
             .orShould().beAssignableTo(BaseEntity.class);
 
+    /**
+     * ArchUnit rule that ensures no JPA entity classes annotated with @Entity,
+     * @MappedSuperclass, or @Enumerated depend on Lombok classes.
+     *
+     * This rule is applied to prevent the use of Lombok in JPA entity classes,
+     * ensuring manual maintenance of boilerplate code and consistency with JPA
+     * specifications.
+     */
     @ArchTest
     public static final ArchRule entitiesMustNotUseLombok = noClasses()
             .that()
@@ -73,6 +103,15 @@ public final class EntityClassRules {
             .areAnnotatedWith(Enumerated.class)
             .should().dependOnClassesThat().resideInAnyPackage("..lombok..");
 
+    /**
+     * ArchUnit rule that ensures no classes annotated with @Entity or
+     * @MappedSuperclass depend on classes that reside in packages
+     * related to Jackson serialization.
+     *
+     * This rule is applied to prevent JPA entity classes from being
+     * serialized using Jackson, ensuring compatibility with JPA persistence
+     * and avoiding potential issues with serialization mechanisms.
+     */
     @ArchTest
     static final ArchRule entitiesMustNotBeSerialized = noClasses().that()
             .areAnnotatedWith(Entity.class)

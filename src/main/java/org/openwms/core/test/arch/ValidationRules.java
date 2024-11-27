@@ -30,7 +30,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static org.openwms.core.test.arch.SpringPredicates.areSpringBeans;
 
 /**
- * A ValidationRules.
+ * A ValidationRules class defines rules for classes that use the JSR-303 Bean Validation API.
  *
  * @author Heiko Scherrer
  */
@@ -42,6 +42,17 @@ public final class ValidationRules {
 
     private ValidationRules() {}
 
+    /**
+     * Ensures that classes which are Spring Beans and contain any methods with JSR-303 (Java Bean Validation)
+     * annotations are also annotated with @Validated.
+     *
+     * This rule applies to classes that adhere to the following conditions:
+     * - The class is a Spring Bean.
+     * - The class contains at least one method with a parameter annotated using JSR-303 (Java Bean Validation) annotations.
+     *
+     * These classes should be annotated with the @Validated annotation, which ensures that the validation
+     * constraints defined by the JSR-303 annotations are enforced by the Spring Framework.
+     */
     @ArchTest
     public static final ArchRule useValidatedWhenRequired = classes()
             .that(areSpringBeans)

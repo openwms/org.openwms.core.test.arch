@@ -27,7 +27,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
 /**
- * A GlobalRules.
+ * A GlobalRules class defines various rules not tight to any library nor architectural layer.
  *
  * @author Heiko Scherrer
  */
@@ -39,9 +39,25 @@ public final class GlobalRules {
 
     private GlobalRules() {}
 
+    /**
+     * Ensures that the codebase is free of cyclic dependencies within slices defined by the
+     * given package pattern.
+     *
+     * This rule applies to slices that match the pattern "org.openwms.(*)..". It checks for
+     * cyclic dependencies within this pattern to ensure that there are no circular dependencies,
+     * enforcing a more maintainable and modular architecture.
+     */
     @ArchTest
     public static final ArchRule slicesFreeOfCycles = slices().matching("org.openwms.(*)..").should().beFreeOfCycles();
 
+    /**
+     * ArchRule to ensure that classes within the "api" package do not depend on classes within the "impl" package.
+     *
+     * This rule is intended to maintain a clear separation between the API layer and the implementation layer,
+     * ensuring that the API layer, which is exposed to clients, does not have dependencies on the internal implementation details.
+     *
+     * The rationale behind this rule is to enforce a clean architecture where internal implementation changes do not impact the external API.
+     */
     @ArchTest
     public static final ArchRule apiImplDependenciesNotAllowed = noClasses()
             .that()
@@ -51,6 +67,15 @@ public final class GlobalRules {
             .resideInAPackage("..impl..")
             .because("The API package is exposed to the client and should never expose internals");
 
+    /**
+     * ArchRule to ensure that Logger fields follow a specific definition pattern.
+     *
+     * This rule specifies that all fields of type `Logger` must be private, static, and final.
+     *
+     * The rationale behind this rule is to enforce a consistent logger definition throughout
+     * the codebase, ensuring that loggers are properly encapsulated and shared only within the
+     * class they are defined in.
+     */
     @ArchTest
     public static final ArchRule verify_logger_definition =
             fields().that().haveRawType(Logger.class)

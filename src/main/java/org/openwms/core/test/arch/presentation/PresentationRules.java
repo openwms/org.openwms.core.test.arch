@@ -24,7 +24,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 /**
- * A PresentationRules.
+ * A PresentationRules defines rules that target types in the presentation layer.
  *
  * @author Heiko Scherrer
  */
@@ -36,6 +36,12 @@ public final class PresentationRules {
 
     private PresentationRules() {}
 
+    /**
+     * An architectural rule that ensures no class in the package "..api.." has a simple name ending with "DTO".
+     *
+     * The name DTO is a way too generic and can be used in all layers. We want to ensure that the DTO types in the api package are
+     * explicitly marked as {@literal VO (ViewObject)} to express where they belong to.
+     */
     @ArchTest
     public static final ArchRule notUseDTONaming = noClasses()
             .that()

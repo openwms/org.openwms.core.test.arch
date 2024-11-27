@@ -26,7 +26,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static org.openwms.core.test.arch.SpringPredicates.areSpringBeansButNoControllers;
 
 /**
- * A SpringRules.
+ * A SpringRules class defines rules for Spring managed components.
  *
  * @author Heiko Scherrer
  */
@@ -38,6 +38,16 @@ public final class SpringRules {
 
     private SpringRules() {}
 
+    /**
+     * Ensures that Spring Bean implementations (except controllers) that are not public are either package-private or protected.
+     * This rule is designed to enforce restricted visibility of Spring Beans to maintain proper encapsulation and control over bean access.
+     *
+     * This rule applies to classes that:
+     * - Are Spring Beans but not controllers.
+     * - Are not annotated with @Public.
+     *
+     * The objective is to ensure that such classes are either package-private or protected.
+     */
     @ArchTest
     public static final ArchRule springBeanImplementationsMustBeRestrictedInVisibility = classes()
             .that(areSpringBeansButNoControllers)

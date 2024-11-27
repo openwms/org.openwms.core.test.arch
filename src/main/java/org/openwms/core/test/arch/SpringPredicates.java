@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * A SpringPredicates.
+ * A SpringPredicates defines predicated that can be used in rule definitions.
  *
  * @author Heiko Scherrer
  */
@@ -33,6 +33,16 @@ public final class SpringPredicates {
 
     private SpringPredicates() {}
 
+    /**
+     * Predicate that selects classes which are Spring Beans but not Controllers.
+     *
+     * This predicate evaluates whether a given Java class is a Spring Bean annotated with
+     * @TxService, @Service, @Component, or @Repository, and ensures that it is not a Mapper
+     * implementation. It specifically excludes classes annotated with controller-related annotations
+     * such as @RestController or @MeasuredRestController.
+     *
+     * The predicate is mainly used in ArchUnit tests to enforce architectural rules on the Spring Beans.
+     */
     public static final DescribedPredicate<JavaClass> areSpringBeansButNoControllers =
             new DescribedPredicate<>("are not generated SpringBeans"){
                 @Override
@@ -47,6 +57,17 @@ public final class SpringPredicates {
                 }
             };
 
+    /**
+     * Predicate that selects classes which are identified as Spring Beans.
+     *
+     * This predicate evaluates whether a given Java class is annotated with
+     * one of several Spring-specific annotations including @TxService, @Service,
+     * @Component, @Repository, @RestController, or @MeasuredRestController,
+     * and ensures that the class is not a Mapper implementation.
+     *
+     * The predicate is mainly used in ArchUnit tests to enforce architectural
+     * rules on the identification and management of Spring Beans within the project.
+     */
     public static final DescribedPredicate<JavaClass> areSpringBeans =
             new DescribedPredicate<>("are not generated SpringBeans"){
                 @Override
@@ -63,6 +84,14 @@ public final class SpringPredicates {
                 }
             };
 
+    /**
+     * Determines whether the given Java class is an implementation of a mapper interface
+     * annotated with "org.mapstruct.Mapper". The check includes both superclasses and interfaces.
+     *
+     * @param input the Java class to check for the mapper implementation
+     * @return true if the class or any of its superclasses or implemented interfaces
+     *         are annotated with "org.mapstruct.Mapper", false otherwise
+     */
     private static boolean isMapperImpl(JavaClass input) {
         boolean result = false;
         if (input.getSuperclass().isPresent()) {
