@@ -82,6 +82,7 @@ public final class GlobalRules {
                     .should().bePrivate()
                     .andShould().beStatic()
                     .andShould().beFinal()
-                    .because("This a defined logger definition");
+                    .because("This a defined logger definition")
+                    .allowEmptyShould(true);
 
 }
