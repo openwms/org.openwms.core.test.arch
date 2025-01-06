@@ -22,6 +22,8 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.CacheMode;
 import com.tngtech.archunit.lang.ArchRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Collection;
@@ -39,6 +41,8 @@ import static org.openwms.core.test.arch.SpringPredicates.areSpringBeans;
         ImportOption.DoNotIncludeJars.class
 })
 public final class ValidationRules {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationRules.class);
 
     private ValidationRules() {}
 
@@ -58,9 +62,13 @@ public final class ValidationRules {
             .that(areSpringBeans)
             .and().containAnyMethodsThat(new DescribedPredicate<>("have a JSR303 annotation") {
                 @Override
-                public boolean test(JavaMethod javaField) {
-                    return javaField.getParameterAnnotations().stream().flatMap(Collection::stream).anyMatch(a -> "jakarta.validation".equals(a.getRawType().getPackageName()));
+                public boolean test(JavaMethod javaMethod) {
+                    var res = javaMethod.getParameterAnnotations().stream().flatMap(Collection::stream).anyMatch(a -> a.getRawType().getPackageName().startsWith("jakarta.validation"));
+                    if (res && LOGGER.isTraceEnabled()) {
+                        LOGGER.trace("Method under consideration: [{}]", javaMethod.getFullName());
+                    }
+                    return res;
                 }
             })
-            .should().beAnnotatedWith(Validated.class);
+            .should().beAnnotatedWith(Validated.class).orShould().beMetaAnnotatedWith(Validated.class);
 }
