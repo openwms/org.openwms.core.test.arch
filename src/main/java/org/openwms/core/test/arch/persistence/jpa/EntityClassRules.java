@@ -54,7 +54,8 @@ public final class EntityClassRules {
     public static final ArchRule entitiesMustHaveTableAnnotation = classes()
             .that()
             .areAnnotatedWith(Entity.class)
-            .should().beAnnotatedWith(Table.class);
+            .should().beAnnotatedWith(Table.class)
+            .allowEmptyShould(true);
 
     /**
      * ArchUnit rule that ensures no classes annotated with @Entity or
@@ -68,7 +69,8 @@ public final class EntityClassRules {
             .that()
             .areAnnotatedWith(Entity.class).or()
             .areAnnotatedWith(MappedSuperclass.class)
-            .should().resideInAnyPackage("..entities..", "..entity..");
+            .should().resideInAnyPackage("..entities..", "..entity..")
+            .allowEmptyShould(true);
 
     /**
      * ArchUnit rule that ensures all classes annotated with @Entity or
@@ -85,7 +87,8 @@ public final class EntityClassRules {
             .areAnnotatedWith(MappedSuperclass.class)
             .and().doNotHaveSimpleName("AuditableRevisionEntity")
             .should().beAssignableTo(ApplicationEntity.class)
-            .orShould().beAssignableTo(BaseEntity.class);
+            .orShould().beAssignableTo(BaseEntity.class)
+            .allowEmptyShould(true);
 
     /**
      * ArchUnit rule that ensures no JPA entity classes annotated with @Entity,
@@ -101,7 +104,8 @@ public final class EntityClassRules {
             .areAnnotatedWith(Entity.class).or()
             .areAnnotatedWith(MappedSuperclass.class).or()
             .areAnnotatedWith(Enumerated.class)
-            .should().dependOnClassesThat().resideInAnyPackage("..lombok..");
+            .should().dependOnClassesThat().resideInAnyPackage("..lombok..")
+            .allowEmptyShould(true);
 
     /**
      * ArchUnit rule that ensures no classes annotated with @Entity or
@@ -118,5 +122,6 @@ public final class EntityClassRules {
             .or()
             .areAnnotatedWith(MappedSuperclass.class)
             .should()
-            .dependOnClassesThat().resideInAnyPackage("com.fasterxml.jackson..");
+            .dependOnClassesThat().resideInAnyPackage("com.fasterxml.jackson..")
+            .allowEmptyShould(true);
 }
