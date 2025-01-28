@@ -20,6 +20,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.CacheMode;
 import com.tngtech.archunit.lang.ArchRule;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
@@ -54,6 +55,8 @@ public final class EntityClassRules {
     public static final ArchRule entitiesMustHaveTableAnnotation = classes()
             .that()
             .areAnnotatedWith(Entity.class)
+            .and()
+            .areNotAnnotatedWith(DiscriminatorValue.class)
             .should().beAnnotatedWith(Table.class)
             .allowEmptyShould(true);
 
