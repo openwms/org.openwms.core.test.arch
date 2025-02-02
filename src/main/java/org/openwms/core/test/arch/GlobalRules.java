@@ -15,13 +15,18 @@
  */
 package org.openwms.core.test.arch;
 
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.CacheMode;
+import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
 import org.slf4j.Logger;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
@@ -85,4 +90,21 @@ public final class GlobalRules {
                     .because("This a defined logger definition")
                     .allowEmptyShould(true);
 
+    /**
+     * Usually the JLS allows also numeric values in the type name {@literal [$_a-zA-Z][$_a-zA-Z0-9]*}. Here we don't.
+     */
+    @ArchTest
+    public static final ArchRule verify_type_names =
+            classes()
+                    .should(new ArchCondition<>("have a name without numeric values") {
+                        @Override
+                        public void check(JavaClass item, ConditionEvents events) {
+                            if (!"".equals(item.getSimpleName()) && !" ".equals(item.getSimpleName()) &&
+                                !item.getSimpleName().matches("(package-info|[A-Z][_a-zA-Z]+)")) {
+                                events.add(SimpleConditionEvent.violated(item, "Class %s contains numeric values".formatted(item.getSimpleName())));
+                            }
+                        }
+                    })
+                    .because("it must be aligned with the JLS (https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.5.5.1)")
+                    .allowEmptyShould(true);
 }
