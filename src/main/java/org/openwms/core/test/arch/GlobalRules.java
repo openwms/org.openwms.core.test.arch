@@ -100,11 +100,29 @@ public final class GlobalRules {
                         @Override
                         public void check(JavaClass item, ConditionEvents events) {
                             if (!"".equals(item.getSimpleName()) && !" ".equals(item.getSimpleName()) &&
-                                !item.getSimpleName().matches("(package-info|[A-Z][_a-zA-Z]+)")) {
+                                !item.getSimpleName().matches("(package-info|[A-Z][_$a-zA-Z]+)")) {
                                 events.add(SimpleConditionEvent.violated(item, "Class %s contains numeric values".formatted(item.getSimpleName())));
                             }
                         }
                     })
                     .because("it must be aligned with the JLS (https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.5.5.1)")
+                    .allowEmptyShould(true);
+
+    /**
+     * Prefixing interfaces with an 'I' is not a practise in Java. For example: IOrderService.
+     */
+    @ArchTest
+    public static final ArchRule verify_no_I_prefix_on_interfaces =
+            classes()
+                    .that().areInterfaces()
+                    .should(new ArchCondition<>("have a name not prefixed with an I") {
+                        @Override
+                        public void check(JavaClass item, ConditionEvents events) {
+                            if (item.getSimpleName().matches("(I[A-Z][a-z$_]).*")) {
+                                events.add(SimpleConditionEvent.violated(item, "Interface %s must not be prefixed with I".formatted(item.getSimpleName())));
+                            }
+                        }
+                    })
+                    .because("prefixing interfaces with an I is a common rule in the .NET world but not in Java")
                     .allowEmptyShould(true);
 }
