@@ -23,6 +23,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import org.ameba.annotation.Public;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.library.GeneralCodingRules.NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
 import static org.openwms.core.test.arch.SpringPredicates.areSpringBeansButNoControllers;
 
 /**
@@ -54,4 +55,10 @@ public final class SpringRules {
             .and().areNotAnnotatedWith(Public.class)
             .should().bePackagePrivate()
             .orShould().beProtected();
+
+    /**
+     * @see {@link com.tngtech.archunit.library.GeneralCodingRules#NO_CLASSES_SHOULD_USE_FIELD_INJECTION}
+     */
+    @ArchTest
+    public static final ArchRule noClassesShouldUseFieldInjection = NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
 }
