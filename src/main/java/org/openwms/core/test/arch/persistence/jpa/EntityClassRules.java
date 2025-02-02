@@ -15,11 +15,15 @@
  */
 package org.openwms.core.test.arch.persistence.jpa;
 
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.CacheMode;
+import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -126,5 +130,31 @@ public final class EntityClassRules {
             .areAnnotatedWith(MappedSuperclass.class)
             .should()
             .dependOnClassesThat().resideInAnyPackage("com.fasterxml.jackson..")
+            .allowEmptyShould(true);
+
+    /**
+     * ArchUnit rule that ensures no classes annotated with @Entity or @MappedSuperclass override the equals/hashCode contract.
+     */
+    @ArchTest
+    static final ArchRule entitiesMustImplementEqualsAndHashCode = classes().that()
+            .areAnnotatedWith(Entity.class)
+            .or()
+            .areAnnotatedWith(MappedSuperclass.class)
+            .should(new ArchCondition<>("implement equals method") {
+                @Override
+                public void check(JavaClass item, ConditionEvents events) {
+                    if (item.tryGetMethod("equals", Object.class).isEmpty()) {
+                        events.add(SimpleConditionEvent.violated(item, "Class %s should implement equals method".formatted(item.getName())));
+                    }
+                }
+            })
+            .andShould(new ArchCondition<>("implement hashCode method") {
+                @Override
+                public void check(JavaClass item, ConditionEvents events) {
+                    if (item.tryGetMethod("hashCode").isEmpty()) {
+                        events.add(SimpleConditionEvent.violated(item, "Class %s should implement hashCode method".formatted(item.getName())));
+                    }
+                }
+            })
             .allowEmptyShould(true);
 }
