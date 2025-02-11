@@ -16,6 +16,7 @@
 package org.openwms.core.test.arch.persistence.jpa;
 
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -49,15 +50,15 @@ public final class EntityClassRules {
     private EntityClassRules() {}
 
     /**
-     * ArchUnit rule that ensures all classes annotated with @Entity are
-     * also annotated with @Table.
+     * ArchUnit rule that ensures all (not abstract) classes annotated with @Entity are also annotated with @Table.
      *
-     * This rule is applied to enforce that every JPA entity has a corresponding
-     * database table mapping.
+     * This rule is applied to enforce that every JPA entity has a corresponding database table mapping.
      */
     @ArchTest
     public static final ArchRule entitiesMustHaveTableAnnotation = classes()
             .that()
+            .doNotHaveModifier(JavaModifier.ABSTRACT)
+            .and()
             .areAnnotatedWith(Entity.class)
             .and()
             .areNotAnnotatedWith(DiscriminatorValue.class)
