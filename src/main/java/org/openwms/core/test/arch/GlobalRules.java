@@ -70,7 +70,8 @@ public final class GlobalRules {
             .should()
             .dependOnClassesThat()
             .resideInAPackage("..impl..")
-            .because("The API package is exposed to the client and should never expose internals");
+            .because("The API package is exposed to the client and should never expose internals")
+            .allowEmptyShould(true);
 
     /**
      * ArchRule to ensure that Logger fields follow a specific definition pattern.

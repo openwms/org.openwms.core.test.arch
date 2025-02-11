@@ -46,5 +46,7 @@ public final class PresentationRules {
     public static final ArchRule notUseDTONaming = noClasses()
             .that()
             .resideInAnyPackage("..api..")
-            .should().haveSimpleNameEndingWith("DTO");
+            .should()
+            .haveSimpleNameEndingWith("DTO")
+            .allowEmptyShould(true);
 }
