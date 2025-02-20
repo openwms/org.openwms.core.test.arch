@@ -45,6 +45,7 @@ public final class SpringRules {
      *
      * This rule applies to classes that:
      * - Are Spring Beans but not controllers.
+     * - And are no annotations (that could also be annotated with Spring component or conditional annotations)
      * - Are not annotated with @Public.
      *
      * The objective is to ensure that such classes are either package-private or protected.
@@ -52,6 +53,7 @@ public final class SpringRules {
     @ArchTest
     public static final ArchRule springBeanImplementationsMustBeRestrictedInVisibility = classes()
             .that(areSpringBeansButNoControllers)
+            .and().areNotAnnotations() // because the OSIPComponent annotation has a conditional (Spring)
             .and().areNotAnnotatedWith(Public.class)
             .should().bePackagePrivate()
             .orShould().beProtected();
