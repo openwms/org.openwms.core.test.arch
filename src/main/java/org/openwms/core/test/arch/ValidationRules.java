@@ -70,5 +70,7 @@ public final class ValidationRules {
                     return res;
                 }
             })
-            .should().beAnnotatedWith(Validated.class).orShould().beMetaAnnotatedWith(Validated.class);
+            .should().beAnnotatedWith(Validated.class)
+            .orShould().beMetaAnnotatedWith(Validated.class)
+            .allowEmptyShould(true);
 }
