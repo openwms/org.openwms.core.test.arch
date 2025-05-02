@@ -21,6 +21,7 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.CacheMode;
 import com.tngtech.archunit.lang.ArchRule;
 import org.ameba.annotation.Public;
+import org.springframework.context.annotation.Configuration;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.GeneralCodingRules.NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
@@ -63,4 +64,19 @@ public final class SpringRules {
      */
     @ArchTest
     public static final ArchRule noClassesShouldUseFieldInjection = NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
+
+    /**
+     * Ensure that Spring Configuration classes follow a common naming pattern and end with {@literal Configuration}.
+     *
+     * This rule applies to classes that:
+     * - Are Spring Configuration classes.
+     * - Are not annotated with @Public.
+     */
+    @ArchTest
+    public final ArchRule configurationsShouldBeNamedConfiguration = classes()
+            .that()
+            .areAnnotatedWith(Configuration.class)
+            .and().areNotAnnotatedWith(Public.class)
+            .should().haveNameMatching(".*Configuration")
+            .allowEmptyShould(true);
 }
