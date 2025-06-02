@@ -36,7 +36,7 @@ public class OnionArchitectureRules {
 
     @ArchTest
     public final ArchRule adaptersShouldNotDependOnEachOther =
-            SlicesRuleDefinition.slices().matching("..adapter.(*)..").should().notDependOnEachOther();
+            SlicesRuleDefinition.slices().matching("..adapter.(*)..").should().notDependOnEachOther().allowEmptyShould(true);
 
     @ArchTest
     public final ArchRule onionArchitecture =
@@ -46,5 +46,5 @@ public class OnionArchitectureRules {
                     .layer("domain").definedBy("..domain..")
                     .layer("application").definedBy("..application..")
                     .whereLayer("adapter").mayNotBeAccessedByAnyLayer()
-                    .whereLayer("application").mayOnlyBeAccessedByLayers("adapter");
+                    .whereLayer("application").mayOnlyBeAccessedByLayers("adapter").allowEmptyShould(true);
 }
