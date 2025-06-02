@@ -96,9 +96,15 @@ public final class SpringPredicates {
         boolean result = false;
         if (input.getSuperclass().isPresent()) {
             result = input.getSuperclass().get().getAllInvolvedRawTypes().stream().anyMatch(i -> i.isAnnotatedWith("org.mapstruct.Mapper"));
+            if (!result) {
+                result = input.getAllRawSuperclasses().stream()
+                        .flatMap(d -> d.getRawInterfaces().stream())
+                        .anyMatch(i -> i.isAnnotatedWith("org.mapstruct.Mapper"));
+            }
         }
         if (!result) {
-            result = input.getRawInterfaces().stream().anyMatch(i -> i.isAnnotatedWith("org.mapstruct.Mapper"));
+            result = input.getRawInterfaces().stream()
+                    .anyMatch(i -> i.isAnnotatedWith("org.mapstruct.Mapper"));
         }
         return result;
     }
