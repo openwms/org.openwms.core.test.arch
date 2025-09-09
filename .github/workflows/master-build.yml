@@ -23,16 +23,48 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - uses: s4u/maven-settings-action@v2.8.0
+
+      - name: Check version
+        if: github.event_name != 'pull_request'
+        id: version-check
+        run: |
+          VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Project version: $VERSION"
+          if [[ "$VERSION" =~ -SNAPSHOT$ ]]; then
+            echo "⚠️ Version is snapshot: $VERSION - skipping publish"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+            VERSION=latest
+          else
+            echo "✅ Version is not a snapshot: $VERSION - will publish"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - uses: s4u/maven-settings-action@v4.0.0
         with:
           servers: |
             [{
-              "id": "sonatype-nexus-snapshots",
-              "username": "${{ secrets.OSS_USERNAME }}",
-              "password": "${{ secrets.OSS_PASSWORD }}"
+              "id": "central",
+              "username": "${{ secrets.OSSRH_USERNAME }}",
+              "password": "${{ secrets.OSSRH_PASSWORD }}"
+            },
+            {
+              "id": "ossrh-staging-api",
+              "username": "${{ secrets.OSSRH_USERNAME }}",
+              "password": "${{ secrets.OSSRH_PASSWORD }}"
             }]
-      - name: Build
+
+      - name: Import GPG key
+        if: steps.version-check.outputs.should_publish == 'true'
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: Build & Deploy
         run: >
           ./mvnw deploy
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
-          -U -B $MAVEN_OPTS
+          -U -B -Prelease,release-central,gpg $MAVEN_OPTS

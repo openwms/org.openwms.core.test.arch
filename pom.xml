@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.openwms</groupId>
         <artifactId>org.openwms.parent</artifactId>
-        <version>27.2</version>
+        <version>27.5</version>
 		<relativePath />
     </parent>
     <artifactId>org.openwms.core.test.arch</artifactId>
@@ -16,7 +16,7 @@
     <url>https://openwms.github.io/${project.artifactId}/index.html</url>
 
     <properties>
-        <archunit-spring.version>1.0.0</archunit-spring.version>
+        <archunit-spring.version>1.2.0</archunit-spring.version>
     </properties>
 
     <developers>
@@ -77,11 +77,11 @@
 
     <repositories>
         <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Staging Repository</name>
-            <url>https://oss.sonatype.org/content/groups/staging/</url>
+            <id>ossrh-staging-api</id>
+            <name>OSSRH Staging Repository</name>
+            <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
             <releases>
                 <enabled>true</enabled>

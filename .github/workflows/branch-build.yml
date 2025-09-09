@@ -1,7 +1,9 @@
 name: 'branch_build'
 on:
   push:
-    branches-ignore: [ master ]
+    branches-ignore:
+      - master
+      - gh-pages
 
 env:
   MAVEN_OPTS: -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -25,6 +27,6 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build
         run: >
-          ./mvnw clean verify
+          ./mvnw verify
           -Dci.buildNumber=$GITHUB_RUN_NUMBER
           -U -B $MAVEN_OPTS
